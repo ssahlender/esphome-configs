@@ -1,0 +1,298 @@
+substitutions:
+  domain: !secret domain
+  ap_ssid: !secret ap_ssid
+  hostname: esp32waveshare1
+
+esphome:
+  name: ${hostname} 
+  platform: ESP32
+  board: esp32dev
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  use_address:  ${hostname}.${domain}
+
+  manual_ip:
+    static_ip: !secret esp32waveshare1_ip
+    gateway: !secret ip_gateway 
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${ap_ssid}.{hostname}
+    password: !secret ap_password
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+#api:
+#  password: !secret api_password
+
+ota:
+  password: !secret ota_password
+
+#esp32_ble_tracker:
+
+sensor:
+  - platform: dht
+    pin: GPIO5
+    model: DHT22
+    temperature:
+      name: "Test Temperature"
+      id: dht_temp
+    humidity:
+      name: "Test Humidity"
+      id: dht_hum
+    update_interval: 60s
+  - platform: mqtt_subscribe
+    name: "Verbrauch Arbeitszimmer"
+    id: power_arbeitszimmer
+    topic: sathome/energy/arbeitszimmer/mystrom/power
+  - platform: mqtt_subscribe
+    name: "Swissgrid Frequenz"
+    id: swissgrid_frequenz
+    topic: sathome/energy/swissgrid/frequenz
+  - platform: mqtt_subscribe
+    name: "Kuehlschrank Temperatur"
+    id: kuehlschrank_temperatur
+    topic: sathome/environment/kuehlschrank/mobilealerts/temperature
+  - platform: mqtt_subscribe
+    name: "meteoschweiz leibstadt"
+    id: meteoschweiz_leibstadt_temp
+    topic: sathome/weather/meteoschweiz/measurement/LEI/temperature
+  - platform: mqtt_subscribe
+    name: "meteoschweiz moehlin"
+    id: meteoschweiz_moehlin_temp
+    topic: sathome/weather/meteoschweiz/measurement/MOE/temperature
+
+  - platform: mqtt_subscribe
+    name: "netatmo outside"
+    id: netatmo_outside
+    topic: sathome/environment/aussenmodul/netatmo/temperature
+
+  - platform: mqtt_subscribe
+    name: "today tempmin low"
+    id: today_tempmin_low
+    topic: sathome/weather_calculated/forecast/today/tempminlow
+
+  - platform: mqtt_subscribe
+    name: "today tempmin high"
+    id: today_tempmin_high
+    topic: sathome/weather_calculated/forecast/today/tempminhigh
+
+  - platform: mqtt_subscribe
+    name: "today tempmax low"
+    id: today_tempmax_low
+    topic: sathome/weather_calculated/forecast/today/tempmaxlow
+
+  - platform: mqtt_subscribe
+    name: "today tempmax high"
+    id: today_tempmax_high
+    topic: sathome/weather_calculated/forecast/today/tempmaxhigh
+
+  - platform: mqtt_subscribe
+    name: "tomorrow tempmin low"
+    id: tomorrow_tempmin_low
+    topic: sathome/weather_calculated/forecast/tomorrow/tempminlow
+
+  - platform: mqtt_subscribe
+    name: "tomorrow tempmin high"
+    id: tomorrow_tempmin_high
+    topic: sathome/weather_calculated/forecast/tomorrow/tempminhigh
+
+  - platform: mqtt_subscribe
+    name: "tomorrow tempmax low"
+    id: tomorrow_tempmax_low
+    topic: sathome/weather_calculated/forecast/tomorrow/tempmaxlow
+
+  - platform: mqtt_subscribe
+    name: "tomorrow tempmax high"
+    id: tomorrow_tempmax_high
+    topic: sathome/weather_calculated/forecast/tomorrow/tempmaxhigh
+
+  - platform: uptime
+    name: Uptime Sensor
+    id: uptime_sensor
+
+  - platform: mqtt_subscribe
+    name: "netatmo wohzimmer temp"
+    id: na_wz_temp
+    topic: sathome/environment/wohnzimmer/netatmo/temperature
+
+  - platform: mqtt_subscribe
+    name: "netatmo wohzimmer humidity"
+    id: na_wz_hum
+    topic: sathome/environment/wohnzimmer/netatmo/humidity
+
+  - platform: mqtt_subscribe
+    name: "netatmo wohzimmer co2"
+    id: na_wz_co2
+    topic: sathome/environment/wohnzimmer/netatmo/co2
+
+
+  - platform: mqtt_subscribe
+    name: "netatmo schlafzimmer temp"
+    id: na_sz_temp
+    topic: sathome/environment/schlafzimmer/netatmo/temperature
+
+  - platform: mqtt_subscribe
+    name: "netatmo schlafzimmer humidity"
+    id: na_sz_hum
+    topic: sathome/environment/schlafzimmer/netatmo/humidity
+
+  - platform: mqtt_subscribe
+    name: "netatmo schlafzimmer co2"
+    id: na_sz_co2
+    topic: sathome/environment/schlafzimmer/netatmo/co2
+
+
+  - platform: mqtt_subscribe
+    name: "netatmo arbeitszimmer temp"
+    id: na_az_temp
+    topic: sathome/environment/arbeitszimmer/netatmo/temperature
+
+  - platform: mqtt_subscribe
+    name: "netatmo arbeitszimmer humidity"
+    id: na_az_hum
+    topic: sathome/environment/arbeitszimmer/netatmo/humidity
+
+  - platform: mqtt_subscribe
+    name: "netatmo arbeitszimmmer co2"
+    id: na_az_co2
+    topic: sathome/environment/arbeitszimmer/netatmo/co2
+
+
+  - platform: mqtt_subscribe
+    name: "netatmo gaestezimmer temp"
+    id: na_gz_temp
+    topic: sathome/environment/gaestezimmer/netatmo/temperature
+
+  - platform: mqtt_subscribe
+    name: "netatmo gaestezimmer humidity"
+    id: na_gz_hum
+    topic: sathome/environment/gaestezimmer/netatmo/humidity
+
+  - platform: mqtt_subscribe
+    name: "netatmo gaestezimmmer co2"
+    id: na_gz_co2
+    topic: sathome/environment/gaestezimmer/netatmo/co2
+
+
+  - platform: mqtt_subscribe
+    name: "netatmo pressure"
+    id: na_wz_pressure
+    topic: sathome/environment/wohnzimmer/netatmo/pressure
+
+  - platform: mqtt_subscribe
+    name: "netatmo wohzimmer noise"
+    id: na_wz_noise
+    topic: sathome/environment/wohnzimmer/netatmo/noise
+
+  - platform: mqtt_subscribe
+    name: "netatmo aussenmodul humidity"
+    id: na_am_hum
+    topic: sathome/environment/aussenmodul/netatmo/humidity
+
+  - platform: mqtt_subscribe
+    name: "mobilealerts balkon"
+    id: ma_am_ba
+    topic: sathome/environment/balkon/mobilealerts/temperature
+
+  - platform: mqtt_subscribe
+    name: "mobilealerts eingang"
+    id: ma_am_eg 
+    topic: sathome/environment/eingang/mobilealerts/temperature
+
+#  - platform: ruuvitag
+#    mac_address: ff:d3:e4:94:9a:c2
+#    humidity:
+#      name: "RuuviTag Humidity"
+#    temperature:
+#      name: "RuuviTag Temperature"
+#    pressure:
+#      name: "RuuviTag Pressure"
+#    acceleration:
+#      name: "RuuviTag Acceleration"
+#    acceleration_x:
+#      name: "RuuviTag Acceleration X"
+#    acceleration_y:
+#      name: "RuuviTag Acceleration Y"
+#    acceleration_z:
+#      name: "RuuviTag Acceleration Z"
+#    battery_voltage:
+#      name: "RuuviTag Battery Voltage"
+#    tx_power:
+#      name: "RuuviTag TX Power"
+#    movement_counter:
+#      name: "RuuviTag Movement Counter"
+#    measurement_sequence_number:
+#      name: "RuuviTag Measurement Sequence Number"
+
+
+
+mqtt:
+  broker: !secret mqtt_broker
+  topic_prefix: sathome/environment/{hostname}
+
+font:
+#  - file: 'slkscr.ttf'
+#    id: font1
+#    size: 12 
+  - file: 'SourceCodePro-Light.ttf'
+    id: font2
+    size: 12 
+#  - file: 'Roboto-Regular.ttf'
+#    id: font3
+#    size: 12
+
+spi:
+  clk_pin: GPIO13
+  mosi_pin: GPIO14
+
+display:
+  - platform: waveshare_epaper
+    cs_pin: GPIO15
+    dc_pin: GPIO27
+    busy_pin: GPIO25
+    reset_pin: GPIO26
+    model: 7.50in
+    rotation: 90
+    #full_update_every: 300
+    #full_update_every: 1800
+    update_interval: 60s
+    lambda: |-
+      it.printf(0, 6, id(font2),"DHT Temp: %.1f", id(dht_temp).state);
+      it.printf(0, 18, id(font2),"DHT Hum: %.1f", id(dht_hum).state);
+      it.printf(0, 30, id(font2),"P AZ: %.2f", id(power_arbeitszimmer).state);
+      it.printf(0, 42, id(font2),"F SG: %.4f", id(swissgrid_frequenz).state);
+      it.printf(0, 54, id(font2),"T KS: %.1f", id(kuehlschrank_temperatur).state);
+      it.printf(0, 66, id(font2),"Up: %.1f", id(uptime_sensor).state);
+      it.printf(0, 78, id(font2), "Lorem Ipsum");
+      it.printf(0, 90, id(font2), "Netatmo");
+      it.printf(0, 102,id(font2),"Raum         Temp  Hum  CO2");
+      it.printf(0, 114,id(font2),"             °C    %%    ppm");
+      it.printf(0, 126,id(font2),"Wohnzimmer   %4.1f %3.0f  %4.0f",id(na_wz_temp).state,id(na_wz_hum).state,id(na_wz_co2).state);
+      it.printf(0, 138,id(font2),"Schlafzimmer %4.1f %3.0f  %4.0f",id(na_sz_temp).state,id(na_sz_hum).state,id(na_sz_co2).state);
+      it.printf(0, 150,id(font2),"Arbeitzimmer %4.1f %3.0f  %4.0f",id(na_az_temp).state,id(na_az_hum).state,id(na_az_co2).state);
+      it.printf(0, 162,id(font2),"Gaestezimmer %4.1f %3.0f  %4.0f",id(na_gz_temp).state,id(na_gz_hum).state,id(na_gz_co2).state);
+      it.printf(0, 174,id(font2),"Luftdruck: %5.1f hPa",id(na_wz_pressure).state);
+      it.printf(0, 186,id(font2),"Luftfeuchte Aussen: %3.0f %%",id(na_am_hum).state);
+      it.printf(0, 198,id(font2),"Laustaerke: %3.0f db",id(na_wz_noise).state);
+      it.printf(110, 6, id(font2),"Aussen");
+      it.printf(110, 18, id(font2),"Netatmo B: %.1f",id(netatmo_outside).state);
+      it.printf(110, 30, id(font2),"MA B:      %.1f",id(ma_am_ba).state);
+      it.printf(110, 42, id(font2),"MA E:      %.1f",id(ma_am_eg).state);
+      it.printf(110, 54, id(font2),"Moehlin:   %.1f",id(meteoschweiz_moehlin_temp).state);
+      it.printf(110, 66, id(font2),"Leibstadt: %.1f",id(meteoschweiz_leibstadt_temp).state);
+      it.printf(220, 6, id(font2),"Vorhersage:");
+      it.printf(220, 18, id(font2),"Heute:");
+      it.printf(220, 30, id(font2),"Min: %4.1f bis %4.1f",id(today_tempmin_low).state,id(today_tempmin_high).state);
+      it.printf(220, 42, id(font2),"Max: %4.1f bis %4.1f",id(today_tempmax_low).state,id(today_tempmax_high).state);
+      it.printf(220, 54, id(font2),"Morgen:");
+      it.printf(220, 66, id(font2),"Min: %4.1f bis %4.1f",id(tomorrow_tempmin_low).state,id(tomorrow_tempmin_high).state);
+      it.printf(220, 78, id(font2),"Max: %4.1f bis %4.1f",id(tomorrow_tempmax_low).state,id(tomorrow_tempmax_high).state);
+

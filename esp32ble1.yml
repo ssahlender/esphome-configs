@@ -1,0 +1,265 @@
+substitutions:
+  domain: !secret domain
+  ap_ssid: !secret ap_ssid
+  hostname: esp32ble1
+
+esphome:
+  name: ${hostname} 
+  platform: ESP32
+#  board: nodemcu-32s
+#  board: az-delivery-devkit-v4
+  board: esp32dev
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  use_address: ${hostname}.${domain}
+
+  manual_ip:
+    static_ip: !secret esp32ble1_ip 
+    gateway: !secret ip_gateway
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${ap_ssid}.{hostname} 
+    password: !secret ap_password 
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+#api:
+#  password: !secret api_password
+
+ota:
+  password: !secret ota_password
+
+esp32_ble_tracker:
+
+#exposure_notifications:
+#  on_exposure_notification:
+#    then:
+#      - lambda: |
+#          ESP_LOGD("main", "Got notification:");
+#          ESP_LOGD("main", "  RPI: %s", hexencode(x.rolling_proximity_identifier).c_str());
+#          ESP_LOGD("main", "  RSSI: %d", x.rssi);
+
+sensor:
+  - platform: uptime
+    name: Uptime Sensor
+    id: uptime_sensor
+
+  - platform: ruuvitag
+    mac_address: ff:d3:e4:94:9a:c2
+    humidity:
+      name: "Balkon Humidity"
+    temperature:
+      name: "Balkon Temperature"
+      id: ruuvi_balkon_temp
+    pressure:
+      name: "Balkon Pressure"
+#    acceleration:
+#      name: "Balkon Acceleration"
+#    acceleration_x:
+#      name: "Balkon Acceleration X"
+#    acceleration_y:
+#      name: "Balkon Acceleration Y"
+#    acceleration_z:
+#      name: "Balkon Acceleration Z"
+    battery_voltage:
+      name: "Balkon Battery Voltage"
+    tx_power:
+      name: "Balkon TX Power"
+#    movement_counter:
+#      name: "Balkon Movement Counter"
+#    measurement_sequence_number:
+#      name: "Balkon Measurement Sequence Number"
+
+  - platform: ruuvitag
+    mac_address: f1:5f:fe:e0:a0:d0
+    humidity:
+      name: "Kuehlschrank Humidity"
+    temperature:
+      name: "Kuehlschrank Temperature"
+    pressure:
+      name: "Kuehlschrank Pressure"
+#    acceleration:
+#      name: "Kuehlschrank Acceleration"
+#    acceleration_x:
+#      name: "Kuehlschrank Acceleration X"
+#    acceleration_y:
+#      name: "Kuehlschrank Acceleration Y"
+#    acceleration_z:
+#      name: "Kuehlschrank Acceleration Z"
+    battery_voltage:
+      name: "Kuehlschrank Battery Voltage"
+    tx_power:
+      name: "Kuehlschrank TX Power"
+#    movement_counter:
+#      name: "Kuehlschrank Movement Counter"
+#    measurement_sequence_number:
+#      name: "Kuehlschrank Measurement Sequence Number"
+
+  - platform: ruuvitag
+    mac_address: f1:52:a4:8a:61:d0
+    humidity:
+      name: "Eingang Humidity"
+    temperature:
+      name: "Eingang Temperature"
+    pressure:
+      name: "Eingang Pressure"
+#    acceleration:
+#      name: "Eingang Acceleration"
+#    acceleration_x:
+#      name: "Eingang Acceleration X"
+#    acceleration_y:
+#      name: "Eingang Acceleration Y"
+#    acceleration_z:
+#      name: "Eingang Acceleration Z"
+    battery_voltage:
+      name: "Eingang Battery Voltage"
+    tx_power:
+      name: "Eingang TX Power"
+#    movement_counter:
+#      name: "Eingang Movement Counter"
+#    measurement_sequence_number:
+#      name: "Eingang Measurement Sequence Number"
+
+  - platform: xiaomi_hhccjcy01
+    mac_address: 'C4:7C:8D:6B:92:46'
+    temperature:
+      name: "XBPS1 Temperature"
+    moisture:
+      name: "XBPS1 Moisture"
+    illuminance:
+      name: "XBPS1 Illuminance"
+    conductivity:
+      name: "XBPS1 Soil Conductivity"
+    battery_level:
+      name: "XBPS1 Battery Level"
+
+  - platform: xiaomi_hhccjcy01
+    mac_address: 'C4:7C:8D:6B:98:62'
+    temperature:
+      name: "XBPS2 Temperature"
+    moisture:
+      name: "XBPS2 Moisture"
+    illuminance:
+      name: "XBPS2 Illuminance"
+    conductivity:
+      name: "XBPS2 Soil Conductivity"
+    battery_level:
+      name: "XBPS2 Battery Level"
+
+  - platform: xiaomi_hhccjcy01
+    mac_address: 'C4:7C:8D:6B:95:8C'
+    temperature:
+      name: "XBPS3 Temperature"
+    moisture:
+      name: "XBPS3 Moisture"
+    illuminance:
+      name: "XBPS3 Illuminance"
+    conductivity:
+      name: "XBPS3 Soil Conductivity"
+    battery_level:
+      name: "XBPS3 Battery Level"
+
+  - platform: xiaomi_lywsdcgq
+    mac_address: "58:2D:34:3B:75:02"
+    temperature:
+      name: "XBCS1 Temperature"
+    humidity:
+      name: "XBCS1 Humidity"
+    battery_level:
+      name: "XBCS1 Battery Level"
+
+  - platform: xiaomi_lywsdcgq
+    mac_address: "58:2D:34:3B:6F:77"
+    temperature:
+      name: "XBCS2 Temperature"
+    humidity:
+      name: "XBCS2 Humidity"
+    battery_level:
+      name: "XBCS2 Battery Level"
+
+  - platform: xiaomi_lywsdcgq
+    mac_address: "58:2D:34:3B:75:3E"
+    temperature:
+      name: "XBCS3 Temperature"
+    humidity:
+      name: "XBCS3 Humidity"
+    battery_level:
+      name: "XBCS3 Battery Level"
+
+  - platform: xiaomi_lywsdcgq
+    mac_address: "58:2D:34:3B:8D:59"
+    temperature:
+      name: "XBCS4 Temperature"
+    humidity:
+      name: "XBCS4 Humidity"
+    battery_level:
+      name: "XBCS4 Battery Level"
+
+  - platform: xiaomi_lywsdcgq
+    mac_address: "58:2D:34:3B:8E:55"
+    temperature:
+      name: "XBCS5 Temperature"
+    humidity:
+      name: "XBCS5 Humidity"
+    battery_level:
+      name: "XBCS5 Battery Level"
+
+  - platform: xiaomi_lywsdcgq
+    mac_address: "58:2D:34:3B:8B:17"
+    temperature:
+      name: "XBCS6 Temperature"
+    humidity:
+      name: "XBCS6 Humidity"
+    battery_level:
+      name: "XBCS6 Battery Level"
+
+#  - platform: mqtt_subscribe
+#    name: "netatmo outside"
+#    id: netatmo_outside
+#    topic: sathome/environment/aussenmodul/netatmo/temperature
+
+#  - platform: mqtt_subscribe
+#    name: "mobilealerts balkon"
+#    id: mobilealerts_balkon
+#    topic: sathome/environment/balkon/mobilealerts/temperature
+
+#  - platform: mqtt_subscribe
+#    name: "mobilealerts eingang"
+#    id: mobilealerts_eingang
+#    topic: sathome/environment/eingang/mobilealerts/temperature
+
+mqtt:
+  broker: !secret mqtt_broker 
+  topic_prefix: sathome/environment/${hostname}
+
+#i2c:
+#  sda: 14 
+#  scl: 13 
+
+#font:
+#  - file: 'slkscr.ttf'
+#    id: font1
+#    size: 12 
+#  - file: 'SourceCodePro-Light.ttf'
+#    id: font2
+#    size: 12 
+#  - file: 'Roboto-Regular.ttf'
+#    id: font3
+#    size: 13
+
+#display:
+#  - platform: ssd1306_i2c
+#    model: "SSD1306 128x32"
+#    address: 0x3c
+#    brightness: 1%
+#    lambda: |-
+#      it.printf(0, 5, id(font3),"NA: %.1f MAB: %.1f",id(netatmo_outside).state,id(mobilealerts_balkon).state);
+#      it.printf(0, 18, id(font3),"MAE: %.1f RV: %.1f",id(mobilealerts_eingang).state,id(ruuvi_balkon_temp).state);

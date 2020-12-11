@@ -1,0 +1,126 @@
+substitutions:
+  domain: !secret domain
+  ap_ssid: !secret ap_ssid
+  hostname: esp32ir
+
+esphome:
+  name: ${hostname} 
+  platform: ESP32
+  board: nodemcu-32s
+#  board: az-delivery-devkit-v4
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password 
+  use_address: ${hostname}.${domain}
+
+  manual_ip:
+    static_ip: !secret esp32ir_ip 
+    gateway: !secret ip_gateway 
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${ap_ssid}.{hostname}
+    password: !secret ap_password
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret api_password
+
+ota:
+  password: !secret ota_password 
+
+mqtt:
+  broker: !secret mqtt_broker
+  topic_prefix: sathome/environment/${hostname}
+
+web_server:
+
+prometheus:
+
+sensor:
+  - platform: uptime
+    name: Uptime Sensor
+  - platform: dht
+    pin: GPIO5
+    model: DHT22
+    temperature:
+      name: "esp32ir Temperature"
+      id: dht_temp
+    humidity:
+      name: "esp32ir Humidity"
+      id: dht_hum
+    update_interval: 60s
+
+
+#remote_receiver:
+#  pin:
+#    number: GPIO14
+#    inverted: true
+    #mode: INPUT_PULLUP
+#  dump: nec
+
+#sun:
+#  latitude: 47.50670422987205
+#  longitude: 8.02327617015983
+
+#text_sensor:
+#  - platform: sun
+#    name: Sun Next Sunrise
+#    type: sunrise
+#  - platform: sun
+#    name: Sun Next Sunset
+#    type: sunset
+
+time:
+  - platform: homeassistant
+
+remote_transmitter:
+  pin: GPIO4
+  carrier_duty_percent: 50%
+
+binary_sensor:
+  - platform: status
+    name: Lichterkette ESP Status
+
+switch:
+  - platform: template
+    name: "Lichterkette an"
+    turn_on_action:
+      - remote_transmitter.transmit_lg:
+          data: 0x40BF00FF
+          nbits: 32
+
+  - platform: template
+    name: "Lichterkette aus"
+    turn_on_action:
+      - remote_transmitter.transmit_lg:
+          data: 0x40BF40BF
+          nbits: 32
+
+  - platform: template
+    name: "Lichterkette dunkler"
+    turn_on_action:
+      remote_transmitter.transmit_lg:
+        data: 0x40BF28D7
+        nbits: 32
+
+  - platform: template
+    name: "Lichterkette heller"
+    turn_on_action:
+      remote_transmitter.transmit_lg:
+        data: 0x40BF6897
+        nbits: 32
+
+  - platform: template
+    name: "Lichterkette Default Modus"
+    turn_on_action:
+      remote_transmitter.transmit_lg:
+        data: 0x40BF48B7
+        nbits: 32

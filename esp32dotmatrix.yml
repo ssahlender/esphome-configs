@@ -1,0 +1,201 @@
+substitutions:
+  domain: !secret domain
+  ap_ssid: !secret ap_ssid
+  hostname: esp32dotmatrix
+
+esphome:
+  name: ${hostname} 
+  platform: ESP32
+  board: nodemcu-32s
+#  board: az-delivery-devkit-v4
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password 
+  use_address: ${hostname}.${domain}
+
+  manual_ip:
+    static_ip: !secret esp32dotmatrix_ip
+    gateway: !secret ip_gateway
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${ap_ssid}.{hostname}
+    password: !secret ap_password
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+#api:
+#  password: !secret api_password
+
+web_server:
+
+prometheus:
+
+ota:
+  password: !secret ota_password
+
+mqtt:
+  broker: !secret mqtt_broker
+  topic_prefix: sathome/environment/${hostname}
+
+sensor:
+  - platform: uptime
+    name: Uptime Sensor
+    id: uptime_sensor
+
+  - platform: mqtt_subscribe
+    name: "netatmo outside"
+    id: netatmo_outside
+    topic: sathome/environment/aussenmodul/netatmo/temperature
+
+  - platform: mqtt_subscribe
+    name: "mobilealerts balkon"
+    id: mobilealerts_balkon
+    topic: sathome/environment/balkon/mobilealerts/temperature
+
+  - platform: mqtt_subscribe
+    name: "mobilealerts eingang"
+    id: mobilealerts_eingang
+    topic: sathome/environment/eingang/mobilealerts/temperature
+
+  - platform: mqtt_subscribe
+    name: "ruuvi balkon"
+    id: ruuvi_balkon
+    topic: sathome/environment/esp32ble2/sensor/balkon_temperature/state
+
+  - platform: mqtt_subscribe
+    name: "ruuvi eingang"
+    id: ruuvi_eingang
+    topic: sathome/environment/esp32ble2/sensor/eingang_temperature/state
+
+  - platform: mqtt_subscribe
+    name: "meteoschweiz leibstadt"
+    id: meteoschweiz_leibstadt
+    topic: sathome/weather/meteoschweiz/measurement/LEI/temperature
+  - platform: mqtt_subscribe
+    name: "meteoschweiz moehlin"
+    id: meteoschweiz_moehlin
+    topic: sathome/weather/meteoschweiz/measurement/MOE/temperature
+
+spi:
+  clk_pin: GPIO0
+  mosi_pin: GPIO21
+
+i2c:
+  sda: GPIO23 
+  scl: GPIO22
+
+display:
+  - platform: max7219digit
+    cs_pin: GPIO2
+    num_chips: 4
+    intensity: 0
+    lambda: |-
+       if (id(display_page) == 1) {
+       it.line(0,0,0,0);
+       it.printf(3,3,id(pixelmix),"%.1f",id(netatmo_outside).state);
+       } else if (id(display_page) == 2) {
+       it.line(0,0,0,1);
+       it.printf(3,3,id(pixelmix),"%.1f",id(mobilealerts_balkon).state);
+       } else if (id(display_page) == 3) {
+       it.line(0,0,0,2);
+       it.printf(3,3,id(pixelmix),"%.1f",id(ruuvi_balkon).state);
+       } else if (id(display_page) == 4) {
+       it.line(0,0,0,3);
+       it.printf(3,3,id(pixelmix),"%.1f",id(mobilealerts_eingang).state);
+       } else if (id(display_page) == 5) {
+       it.line(0,0,0,4);
+       it.printf(3,3,id(pixelmix),"%.1f",id(ruuvi_eingang).state);
+       } else if (id(display_page) == 6) {
+       it.line(0,0,0,5);
+       it.printf(3,3,id(pixelmix),"%.1f",id(meteoschweiz_leibstadt).state);
+       } else if (id(display_page) == 7) {
+       it.line(0,0,0,6);
+       it.printf(3,3,id(pixelmix),"%.1f",id(meteoschweiz_moehlin).state);
+       }
+    #  it.strftime(0, 0, id(dogica), "%S", id(hass_time).now());
+#      it.line(1, 7, 21, 7);
+
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+    brightness: 0.01 
+    lambda: |-
+       if (id(display_page) == 1) {
+       it.line(0,0,0,0);
+       it.printf(3,4,id(font2),"Netatmo");
+       it.printf(3,20,id(font2),"Balkon");
+       it.printf(3,36,id(font2),"%.1f",id(netatmo_outside).state);
+       } else if (id(display_page) == 2) {
+       it.line(0,0,0,1);
+       it.printf(3,4,id(font2),"Mobilealerts");
+       it.printf(3,20,id(font2),"Balkon");
+       it.printf(3,36,id(font2),"%.1f",id(mobilealerts_balkon).state);
+       } else if (id(display_page) == 3) {
+       it.line(0,0,0,2);
+       it.printf(3,4,id(font2),"Ruuvi");
+       it.printf(3,20,id(font2),"Balkon");
+       it.printf(3,36,id(font2),"%.1f",id(ruuvi_balkon).state);
+       } else if (id(display_page) == 4) {
+       it.line(0,0,0,3);
+       it.printf(3,4,id(font2),"Mobilealerts");
+       it.printf(3,20,id(font2),"Eingang");
+       it.printf(3,36,id(font2),"%.1f",id(mobilealerts_eingang).state);
+       } else if (id(display_page) == 5) {
+       it.line(0,0,0,4);
+       it.printf(3,4,id(font2),"Ruuvi");
+       it.printf(3,20,id(font2),"Einang");
+       it.printf(3,36,id(font2),"%.1f",id(ruuvi_eingang).state);
+       } else if (id(display_page) == 6) {
+       it.line(0,0,0,5);
+       it.printf(3,4,id(font2),"Meteoschweiz");
+       it.printf(3,20,id(font2),"Leibstadt");
+       it.printf(3,36,id(font2),"%.1f",id(meteoschweiz_leibstadt).state);
+       } else if (id(display_page) == 7) {
+       it.line(0,0,0,6);
+       it.printf(3,4,id(font2),"Meteoschweiz");
+       it.printf(3,20,id(font2),"Moehlin");
+       it.printf(3,36,id(font2),"%.1f",id(meteoschweiz_moehlin).state);
+       }
+
+font:
+  - file: "pixelmix.ttf"
+    id: pixelmix
+    size: 8 
+#  - file: "pixelmix.ttf"
+#    id: pixelmix2
+#    size: 12 
+  - file: "dogica.ttf"
+    id: dogica 
+    size: 8 
+  - file: "SourceCodePro-Light.ttf"
+    id: font2
+    size: 16 
+
+
+#time:
+#  - platform: homeassistant
+#    id: hass_time
+
+globals:
+  - id: display_page
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+interval:
+  - interval: 5s
+    then:
+      - lambda: |-
+          ESP_LOGD("main", "Page %d", id(display_page));
+          if (id(display_page) < 6 ) {
+            id(display_page)++;
+          } else {
+            id(display_page) = 1;
+          }
